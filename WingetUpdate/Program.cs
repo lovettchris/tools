@@ -188,7 +188,7 @@ namespace GitTool
             git.CreateBranchForFolder(toRemove, branchName, comment);
 
             // Now create pull request from this branch.
-            git.CreateInteractivePullRequest();
+            git.CreatePullRequest();
         }
 
         private void Publish(Version version)
@@ -299,7 +299,7 @@ namespace GitTool
             git.CreateBranchForFolder(version.ToString(), branchName, comment);
 
             // Now create pull request from this branch.
-            git.CreateInteractivePullRequest();
+            git.CreatePullRequest();
         }
 
         private bool ValidateUrl(string url)

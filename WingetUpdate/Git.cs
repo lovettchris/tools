@@ -61,15 +61,14 @@ internal sealed class Git : Fork
         this.Run(0, "push", "-u", "origin", branchName);
     }
 
-    internal void CreateInteractivePullRequest()
+    internal void CreatePullRequest()
     {
         // Now create pull request from this branch.
         var gitForkName = this.GetForkName();
         var url = $"https://github.com/{gitForkName}";
         Console.WriteLine($">>> Please create pull request on {url} ");
-        Console.WriteLine("Press ENTER to continue...");
+        Console.WriteLine("Opening web browser to the right place...");
         this.OpenUrl(url);
-        Console.ReadLine();
     }
 
     internal string GetUserName()
