@@ -196,7 +196,7 @@ namespace GitTool
             var versionFolder = Path.Combine(this.wingetTarget, version.ToString());
             if (Directory.Exists(versionFolder))
             {
-                Console.WriteLine($"Version {version} folder already exists.");
+                Console.WriteLine($"Version folder already exists: {versionFolder}");
                 return;
             }
 

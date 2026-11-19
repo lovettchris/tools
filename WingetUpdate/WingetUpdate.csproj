@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <OutputType>Exe</OutputType>
+    <FileVersion>1.0.0.1</FileVersion>
   </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if exist d:\tools copy $(TargetDir)* d:\tools\&#xD;&#xA;if exist f:\tools copy $(TargetDir)* f:\tools\" />
+  </Target>
 
 </Project>
