@@ -37,11 +37,12 @@ namespace GitTool
                 return;
             }
 
-            program.applicationName = Path.GetFileName(program.wingetTarget);
-            program.organization = Path.GetFileName(Path.GetDirectoryName(program.wingetTarget));
+            string tail = "";
             var manifests = program.wingetTarget;
             while (Path.GetFileName(manifests) != "manifests")
             {
+                var name = Path.GetFileName(manifests);
+                tail = Path.Combine(name, tail);
                 manifests = Path.GetDirectoryName(manifests);
                 if (string.IsNullOrEmpty(manifests))
                 {
@@ -50,6 +51,17 @@ namespace GitTool
                 }
             }
             program.wingetSource = Path.GetDirectoryName(manifests);
+
+            // tail contains a letter folder for breaking up the organizations so we need to trim that.
+            var parts = tail.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 3)
+            {
+                Console.WriteLine($"Could not find organization or app folder given the provided path: {program.wingetTarget}");
+                return;
+            }
+            program.organization = parts[1];
+            // now joint parts[2] and parts[3] to get the application name, since some orgs have a letter folder in between.
+            program.applicationName = string.Join(".", parts.Skip(2));
 
             if (Version.TryParse(program.applicationName, out Version version))
             {
@@ -286,16 +298,17 @@ namespace GitTool
             wingetCreate.Run(0, args.ToArray());
 
             // Validate the new manifests.
-            wingetCreate.Run(0, "validate", ".");
+            winget.Run(0, "validate", ".");
 
             // Check we can install it.
-            wingetCreate.Run(0, "install", "-m", ".");
+            winget.Run(0, "install", "-m", ".");
 
             // Now turn this change into a commit and push it to the remote repository as a new branch, and then create a pull request for it.
             var git = new Git();
             var userName = git.GetUserName();
             var branchName = $"{userName}/{this.applicationName}_{version}";
             var comment = $"Add {this.applicationName} version {version}";
+            Directory.SetCurrentDirectory(this.wingetTarget);
             git.CreateBranchForFolder(version.ToString(), branchName, comment);
 
             // Now create pull request from this branch.
